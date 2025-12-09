@@ -35,8 +35,8 @@
             <ng-container matColumnDef="image">
               <th mat-header-cell *matHeaderCellDef>Image</th>
               <td mat-cell *matCellDef="let item">
-                @if (item.imageUrl) {
-                  <img [src]="item.imageUrl" [alt]="item.name" class="product-image">
+                @if (item.productImage) {
+                  <img [src]="item.productImage" [alt]="item.productName" class="product-image">
                 } @else {
                   <div class="no-image">
                     <mat-icon>image</mat-icon>
@@ -48,6 +48,23 @@
             <!-- Name Column -->
             <ng-container matColumnDef="name">
               <th mat-header-cell *matHeaderCellDef>Produit</th>
+              <td mat-cell *matCellDef="let item">
+                <div class="product-info">
+                  <strong>{{ item.productName }}</strong>
+                  <small>Vendu par: {{ item.sellerName }}</small>
+                </div>
+              </td>
+            </ng-container>
+
+            <!-- Price Column -->
+            <ng-container matColumnDef="price">
+              <th mat-header-cell *matHeaderCellDef>Prix unitaire</th>
+              <td mat-cell *matCellDef="let item">{{ item.productPrice | number:'1.2-2' }} €</td>
+            </ng-container>
+
+            <!-- Quantity Column -->
+            <ng-container matColumnDef="quantity">
+              <th mat-header-cell *matHeaderCellDef>Quantité</th>
               <td mat-cell *matCellDef="let item">
                 <strong>{{ item.name }}</strong>
               </td>

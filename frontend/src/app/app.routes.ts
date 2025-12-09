@@ -4,6 +4,8 @@ import { Register } from './features/auth/register/register';
 import { ProductList } from './features/products/product-list/product-list';
 import { ProductDetail } from './features/products/product-detail/product-detail';
 import { CartPage } from './features/cart/cart';
+import { CheckoutPage } from './features/checkout/checkout';
+import { OrderHistoryPage } from './features/orders/order-history';
 import { Dashboard } from './features/seller/dashboard/dashboard';
 import { authGuard } from './core/guards/auth.guard';
 import { sellerGuard } from './core/guards/seller.guard';
@@ -34,6 +36,16 @@ export const routes: Routes = [
   { 
     path: 'cart', 
     component: CartPage,
+    canActivate: [authGuard] // Protégé : nécessite d'être connecté
+  },
+  { 
+    path: 'checkout', 
+    component: CheckoutPage,
+    canActivate: [authGuard] // Protégé : nécessite d'être connecté
+  },
+  { 
+    path: 'orders', 
+    component: OrderHistoryPage,
     canActivate: [authGuard] // Protégé : nécessite d'être connecté
   },
   { 

@@ -9,7 +9,8 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-import { Cart } from '../../core/services/cart';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { CartService } from '../../core/services/cart-backend.service';
 import { CartItem } from '../../core/models/cart.model';
 
 @Component({
@@ -24,7 +25,8 @@ import { CartItem } from '../../core/models/cart.model';
     MatToolbarModule,
     MatDividerModule,
     MatTooltipModule,
-    MatSnackBarModule
+    MatSnackBarModule,
+    MatProgressSpinnerModule
   ],
   templateUrl: './cart.html',
   styleUrl: './cart.scss'
@@ -32,9 +34,10 @@ import { CartItem } from '../../core/models/cart.model';
 export class CartPage implements OnInit {
   cartItems: CartItem[] = [];
   displayedColumns: string[] = ['image', 'name', 'price', 'quantity', 'total', 'actions'];
+  loading = false;
 
   constructor(
-    private cartService: Cart,
+    private cartService: CartService,
     private router: Router,
     private snackBar: MatSnackBar
   ) {}
@@ -47,14 +50,34 @@ export class CartPage implements OnInit {
   }
 
   loadCart(): void {
-    this.cartItems = this.cartService.getCartItems();
+    this.loading = true;
+    this.cartService.loadCart().subscribe({
+      next: (summary) => {
+        this.cartItems = summary.items;
+        this.loading = false;
+      },
+      error: (error) => {
+        console.error('Error loading cart:', error);
+        this.loading = false;
+      }
+    });
   }
 
   increaseQuantity(item: CartItem): void {
+    if (!item.id) return;
+    
     // Vérifier si on peut augmenter la quantité (stock disponible)
-    const stock = item.stock ?? Infinity; // Si stock undefined, pas de limite
+    const stock = item.stock ?? Infinity;
     if (item.quantity < stock) {
-      this.cartService.updateQuantity(item.productId, item.quantity + 1);
+      this.cartService.updateQuantity(item.id, item.quantity + 1).subscribe({
+        next: () => {
+          this.snackBar.open('Quantité mise à jour', 'Fermer', { duration: 2000 });
+        },
+        error: (error) => {
+          console.error('Error updating quantity:', error);
+          this.snackBar.open('Erreur lors de la mise à jour', 'Fermer', { duration: 3000 });
+        }
+      });
     } else {
       this.snackBar.open(`Stock maximum atteint (${stock} disponibles)`, 'Fermer', {
         duration: 3000,
@@ -64,24 +87,46 @@ export class CartPage implements OnInit {
   }
 
   decreaseQuantity(item: CartItem): void {
-    if (item.quantity > 1) {
-      this.cartService.updateQuantity(item.productId, item.quantity - 1);
-    }
+    if (!item.id || item.quantity <= 1) return;
+    
+    this.cartService.updateQuantity(item.id, item.quantity - 1).subscribe({
+      next: () => {
+        this.snackBar.open('Quantité mise à jour', 'Fermer', { duration: 2000 });
+      },
+      error: (error) => {
+        console.error('Error updating quantity:', error);
+        this.snackBar.open('Erreur lors de la mise à jour', 'Fermer', { duration: 3000 });
+      }
+    });
   }
 
   removeItem(item: CartItem): void {
-    this.cartService.removeFromCart(item.productId);
-    this.snackBar.open(`${item.name} retiré du panier`, 'Fermer', {
-      duration: 2000,
-      panelClass: ['success-snackbar']
+    if (!item.id) return;
+    
+    this.cartService.removeItem(item.id).subscribe({
+      next: () => {
+        this.snackBar.open(`${item.productName} retiré du panier`, 'Fermer', {
+          duration: 2000,
+          panelClass: ['success-snackbar']
+        });
+      },
+      error: (error) => {
+        console.error('Error removing item:', error);
+        this.snackBar.open('Erreur lors de la suppression', 'Fermer', { duration: 3000 });
+      }
     });
   }
 
   clearCart(): void {
     if (confirm('Vider tout le panier ?')) {
-      this.cartService.clearCart();
-      this.snackBar.open('Panier vidé', 'Fermer', {
-        duration: 2000
+      this.cartService.clearCart().subscribe({
+        next: () => {
+          this.snackBar.open('Panier vidé', 'Fermer', { duration: 2000 });
+        },
+        error: (error) => {
+          console.error('Error clearing cart:', error);
+          this.snackBar.open('Erreur lors du vidage du panier', 'Fermer', { duration: 3000 });
+        }
       });
     }
   }
@@ -91,7 +136,7 @@ export class CartPage implements OnInit {
   }
 
   getItemTotal(item: CartItem): number {
-    return item.price * item.quantity;
+    return item.productPrice * item.quantity;
   }
 
   continueShopping(): void {
@@ -99,10 +144,11 @@ export class CartPage implements OnInit {
   }
 
   checkout(): void {
-    // TODO: Implémenter le système de commande
-    this.snackBar.open('Fonction de commande à venir!', 'OK', {
-      duration: 3000
-    });
+    if (this.cartItems.length === 0) {
+      this.snackBar.open('Votre panier est vide', 'Fermer', { duration: 3000 });
+      return;
+    }
+    this.router.navigate(['/checkout']);
   }
 
   goBack(): void {

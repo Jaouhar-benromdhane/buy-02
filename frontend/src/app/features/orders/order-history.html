@@ -1,0 +1,96 @@
+<div class="order-history-container">
+  <!-- Toolbar -->
+  <mat-toolbar color="primary" class="toolbar">
+    <button mat-icon-button (click)="goBack()">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+    <span class="title">📦 Mes Commandes</span>
+  </mat-toolbar>
+
+  <div class="content">
+    @if (loading) {
+      <div class="loading-container">
+        <mat-spinner></mat-spinner>
+        <p>Chargement des commandes...</p>
+      </div>
+    } @else if (orders.length === 0) {
+      <mat-card class="empty-card">
+        <mat-icon>shopping_bag</mat-icon>
+        <h2>Aucune commande</h2>
+        <p>Vous n'avez pas encore passé de commande</p>
+        <button mat-raised-button color="primary" (click)="goBack()">
+          <mat-icon>storefront</mat-icon>
+          Découvrir les produits
+        </button>
+      </mat-card>
+    } @else {
+      <div class="orders-list">
+        @for (order of orders; track order.id) {
+          <mat-card class="order-card">
+            <!-- En-tête de commande -->
+            <div class="order-header">
+              <div class="order-info">
+                <h3>Commande {{ order.orderNumber }}</h3>
+                <small>{{ order.createdAt | date:'dd/MM/yyyy à HH:mm' }}</small>
+              </div>
+              <mat-chip-set>
+                <mat-chip [color]="getStatusColor(order.status)" highlighted>
+                  {{ getStatusLabel(order.status) }}
+                </mat-chip>
+              </mat-chip-set>
+            </div>
+
+            <mat-divider></mat-divider>
+
+            <!-- Articles -->
+            <div class="order-items">
+              @for (item of order.items; track item.productId) {
+                <div class="order-item">
+                  <img [src]="item.productImage || 'assets/no-image.png'" [alt]="item.productName">
+                  <div class="item-details">
+                    <strong>{{ item.productName }}</strong>
+                    <small>Vendu par: {{ item.sellerName }}</small>
+                    <small>Quantité: {{ item.quantity }}</small>
+                  </div>
+                  <span class="item-price">{{ (item.unitPrice * item.quantity) | number:'1.2-2' }} €</span>
+                </div>
+              }
+            </div>
+
+            <mat-divider></mat-divider>
+
+            <!-- Pied de commande -->
+            <div class="order-footer">
+              <div class="order-total">
+                <span>Total</span>
+                <strong>{{ order.totalAmount | number:'1.2-2' }} €</strong>
+              </div>
+              <div class="order-actions">
+                <!-- Boutons d'action selon le statut -->
+                @if (order.status === 'PENDING') {
+                  <button mat-stroked-button color="warn">
+                    <mat-icon>cancel</mat-icon>
+                    Annuler
+                  </button>
+                }
+              </div>
+            </div>
+
+            <!-- Adresse de livraison -->
+            <mat-divider></mat-divider>
+            <div class="shipping-info">
+              <mat-icon>local_shipping</mat-icon>
+              <div>
+                <strong>Adresse de livraison</strong>
+                <p>{{ order.shippingAddress.fullName }}</p>
+                <p>{{ order.shippingAddress.address }}</p>
+                <p>{{ order.shippingAddress.postalCode }} {{ order.shippingAddress.city }}</p>
+                <p>{{ order.shippingAddress.phone }}</p>
+              </div>
+            </div>
+          </mat-card>
+        }
+      </div>
+    }
+  </div>
+</div>
