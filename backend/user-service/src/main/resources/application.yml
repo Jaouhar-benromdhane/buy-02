@@ -24,12 +24,7 @@ spring:
   # MONGODB CONNECTION
   data:
     mongodb:
-      host: localhost
-      port: 27017
-      database: ecommerce_users
-      authentication-database: admin
-      username: admin
-      password: admin123
+      uri: mongodb://localhost:27017/ecommerce_users
   
   # KAFKA
   kafka:
