@@ -1,0 +1,50 @@
+# ===================================
+# ORDER SERVICE CONFIGURATION
+# ===================================
+
+# SERVER
+server:
+  port: 8084
+  ssl:
+    enabled: true
+    key-store: classpath:keystore.p12
+    key-store-password: changeit
+    key-store-type: PKCS12
+    key-alias: ecommerce
+  servlet:
+    context-path: /
+  error:
+    include-message: always
+
+# SPRING
+spring:
+  application:
+    name: order-service
+  
+  # MONGODB CONNECTION
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/ecommerce_orders
+  
+  # KAFKA
+  kafka:
+    bootstrap-servers: localhost:9092
+    # Producer configuration
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+    # Consumer configuration
+    consumer:
+      group-id: order-service-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "*"
+
+# LOGGING
+logging:
+  level:
+    com.ecommerce.order: DEBUG
+    org.springframework.data.mongodb: DEBUG
+    org.springframework.kafka: INFO
