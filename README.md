@@ -34,14 +34,19 @@ Créer une plateforme où :
 - ✅ Sélecteur de quantité
 - ✅ **Validation de stock** avant ajout au panier
 - ✅ Ajout au panier avec notifications
-- ✅ Panier d'achat complet :
+- ✅ **Panier d'achat complet (MongoDB)** :
   - Badge avec compteur en temps réel
   - **Validation de stock** lors de l'augmentation de quantité
   - Gestion des quantités (augmenter/diminuer)
   - Suppression d'articles
   - Calcul du total
-  - Panier persistant par utilisateur
+  - Panier persistant par utilisateur en base de données
 - ✅ Navigation fluide entre les pages
+- 🚧 **Système de commandes** (en cours) :
+  - Checkout avec formulaire d'adresse
+  - Paiement à la livraison (Pay on Delivery)
+  - Historique des commandes
+  - Suivi du statut des commandes
 
 ### 🏪 **Pour les Vendeurs (SELLER)**
 - ✅ Dashboard de gestion des produits
@@ -76,9 +81,10 @@ Créer une plateforme où :
 
 ### Microservices Backend (Spring Boot)
 ```
-├── user-service          # Gestion des utilisateurs (clients & vendeurs)
+├── user-service          # Gestion des utilisateurs + Panier d'achat
 ├── product-service       # Gestion des produits (CRUD)
 ├── media-service         # Gestion des images produits
+├── order-service         # Gestion des commandes
 ├── api-gateway           # Point d'entrée unique (optionnel)
 └── eureka-server         # Service discovery (optionnel)
 ```
@@ -141,26 +147,70 @@ Créer une plateforme où :
 }
 ```
 
-### Cart (Panier - localStorage)
+### CartItem (Panier - MongoDB)
 ```json
 {
-  "cart_userId": [
+  "id": "String",
+  "userId": "String",
+  "productId": "String",
+  "productName": "String",
+  "productImage": "String",
+  "productPrice": "Double",
+  "quantity": "Int",
+  "sellerId": "String",
+  "sellerName": "String",
+  "addedAt": "Date",
+  "updatedAt": "Date"
+}
+```
+
+### Order (Commande)
+```json
+{
+  "id": "String",
+  "orderNumber": "String (ex: ORD-2025-001234)",
+  "userId": "String",
+  "userName": "String",
+  "userEmail": "String",
+  "items": [
     {
       "productId": "String",
-      "name": "String",
-      "price": "Double",
+      "productName": "String",
+      "productImage": "String",
       "quantity": "Int",
-      "imageUrl": "String"
+      "unitPrice": "Double",
+      "subtotal": "Double",
+      "sellerId": "String",
+      "sellerName": "String"
     }
-  ]
+  ],
+  "subtotal": "Double",
+  "shippingCost": "Double",
+  "tax": "Double",
+  "totalAmount": "Double",
+  "status": "Enum (PENDING, CONFIRMED, SHIPPED, DELIVERED, CANCELLED)",
+  "paymentMethod": "Enum (CASH_ON_DELIVERY, CARD, PAYPAL)",
+  "paymentStatus": "Enum (PENDING, PAID, FAILED)",
+  "shippingAddress": {
+    "fullName": "String",
+    "phone": "String",
+    "address": "String",
+    "city": "String",
+    "postalCode": "String",
+    "country": "String"
+  },
+  "createdAt": "Date",
+  "updatedAt": "Date"
 }
 ```
 
 **Relations** :
 - Un User (SELLER) peut avoir plusieurs Products (1 → n)
 - Un Product peut avoir plusieurs Media (1 → n)
+- Un User peut avoir plusieurs CartItems (1 → n)
+- Un User peut avoir plusieurs Orders (1 → n)
 - Suppression en cascade via Kafka : Product supprimé → Media supprimés automatiquement
-- Chaque utilisateur a son propre panier (clé unique dans localStorage)
+- Panier persistant en base MongoDB (pas en localStorage)
 
 ---
 
