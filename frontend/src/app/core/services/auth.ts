@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, BehaviorSubject, tap } from 'rxjs';
 import { AuthResponse, LoginRequest, RegisterRequest, User } from '../models/user.model';
-import { Cart } from './cart';
+import { CartService } from './cart-backend.service';
 
 @Injectable({
   providedIn: 'root',
@@ -17,7 +17,7 @@ export class Auth {
 
   constructor(
     private http: HttpClient,
-    private cartService: Cart
+    private cartService: CartService
   ) { }
 
   /**
@@ -57,8 +57,8 @@ export class Auth {
     localStorage.removeItem(this.TOKEN_KEY);
     localStorage.removeItem(this.USER_KEY);
     this.currentUserSubject.next(null);
-    // Vider le panier en mémoire (mais pas supprimer du localStorage)
-    this.cartService.clearCartOnLogout();
+    // Vider le cache du panier
+    this.cartService.clearCartCache();
   }
 
   /**

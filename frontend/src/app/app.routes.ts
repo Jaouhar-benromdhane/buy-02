@@ -6,6 +6,7 @@ import { ProductDetail } from './features/products/product-detail/product-detail
 import { CartPage } from './features/cart/cart';
 import { CheckoutPage } from './features/checkout/checkout';
 import { OrderHistoryPage } from './features/orders/order-history';
+import { SellerOrdersPage } from './features/seller-orders/seller-orders';
 import { Dashboard } from './features/seller/dashboard/dashboard';
 import { authGuard } from './core/guards/auth.guard';
 import { sellerGuard } from './core/guards/seller.guard';
@@ -47,6 +48,11 @@ export const routes: Routes = [
     path: 'orders', 
     component: OrderHistoryPage,
     canActivate: [authGuard] // Protégé : nécessite d'être connecté
+  },
+  { 
+    path: 'seller/orders', 
+    component: SellerOrdersPage,
+    canActivate: [sellerGuard] // Protégé : nécessite d'être SELLER
   },
   { 
     path: 'seller/dashboard', 

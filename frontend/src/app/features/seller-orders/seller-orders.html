@@ -1,0 +1,165 @@
+<div class="seller-orders-container">
+  <!-- Toolbar -->
+  <mat-toolbar color="primary" class="toolbar">
+    <button mat-icon-button (click)="goBack()">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+    <span class="title">📦 Mes Commandes Vendeur</span>
+    <span class="spacer"></span>
+    <button mat-icon-button [matMenuTriggerFor]="menu">
+      <mat-icon>filter_list</mat-icon>
+    </button>
+    <mat-menu #menu="matMenu">
+      @for (option of statusOptions; track option.value) {
+        <button mat-menu-item (click)="onStatusFilterChange(option.value)">
+          {{ option.label }}
+        </button>
+      }
+    </mat-menu>
+  </mat-toolbar>
+
+  <div class="content">
+    @if (loading()) {
+      <!-- Loading Spinner -->
+      <div class="loading-container">
+        <mat-spinner></mat-spinner>
+        <p>Chargement des commandes...</p>
+      </div>
+    } @else if (filteredOrders().length === 0) {
+      <!-- Empty State -->
+      <mat-card class="empty-card">
+        <mat-icon>inbox</mat-icon>
+        <h2>Aucune commande</h2>
+        <p>Vous n'avez pas encore de commandes {{ selectedStatus() !== 'ALL' ? 'pour ce statut' : '' }}</p>
+        @if (selectedStatus() !== 'ALL') {
+          <button mat-raised-button color="primary" (click)="onStatusFilterChange('ALL')">
+            Voir toutes les commandes
+          </button>
+        }
+      </mat-card>
+    } @else {
+      <!-- Summary Stats -->
+      <div class="stats-row">
+        <mat-card class="stat-card">
+          <mat-icon class="stat-icon">shopping_bag</mat-icon>
+          <div class="stat-content">
+            <span class="stat-label">Total commandes</span>
+            <span class="stat-value">{{ filteredOrders().length }}</span>
+          </div>
+        </mat-card>
+        
+        <mat-card class="stat-card revenue">
+          <mat-icon class="stat-icon">euro</mat-icon>
+          <div class="stat-content">
+            <span class="stat-label">Chiffre d'affaires</span>
+            <span class="stat-value">{{ getTotalRevenue() | number:'1.2-2' }} €</span>
+          </div>
+        </mat-card>
+      </div>
+
+      <!-- Orders List -->
+      <div class="orders-list">
+        @for (order of filteredOrders(); track order.id) {
+          <mat-card class="order-card">
+            <!-- Order Header -->
+            <div class="order-header">
+              <div class="order-info">
+                <h3>Commande {{ order.orderNumber }}</h3>
+                <span class="order-date">{{ order.createdAt | date:'dd/MM/yyyy à HH:mm' }}</span>
+              </div>
+              <mat-chip [class]="'status-chip status-' + order.status">
+                <mat-icon>{{ getStatusIcon(order.status) }}</mat-icon>
+                {{ getStatusLabel(order.status) }}
+              </mat-chip>
+            </div>
+
+            <!-- Customer Info -->
+            <div class="customer-section">
+              <mat-icon>person</mat-icon>
+              <div class="customer-info">
+                <strong>Client</strong>
+                <span>{{ order.shippingAddress.fullName }}</span>
+                <span class="customer-phone">{{ order.shippingAddress.phoneNumber }}</span>
+              </div>
+            </div>
+
+            <!-- Shipping Address -->
+            <div class="address-section">
+              <mat-icon>location_on</mat-icon>
+              <div class="address-info">
+                <strong>Adresse de livraison</strong>
+                <span>{{ order.shippingAddress.street }}</span>
+                <span>{{ order.shippingAddress.postalCode }} {{ order.shippingAddress.city }}</span>
+                <span>{{ order.shippingAddress.country }}</span>
+              </div>
+            </div>
+
+            <!-- Order Items -->
+            <div class="items-section">
+              <strong class="items-title">Articles commandés</strong>
+              @for (item of order.items; track item.productId) {
+                <div class="order-item">
+                  <img 
+                    [src]="item.productImage" 
+                    [alt]="item.productName" 
+                    class="item-image">
+                  <div class="item-details">
+                    <span class="item-name">{{ item.productName }}</span>
+                    <span class="item-quantity">Quantité: {{ item.quantity }}</span>
+                  </div>
+                  <span class="item-price">{{ item.price * item.quantity | number:'1.2-2' }} €</span>
+                </div>
+              }
+            </div>
+
+            <!-- Order Total -->
+            <div class="order-total">
+              <strong>Total:</strong>
+              <span class="total-amount">{{ order.totalAmount | number:'1.2-2' }} €</span>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="order-actions">
+              @if (canConfirm(order)) {
+                <button 
+                  mat-raised-button 
+                  color="primary"
+                  (click)="confirmOrder(order.id!)">
+                  <mat-icon>check_circle</mat-icon>
+                  Confirmer
+                </button>
+              }
+              @if (canShip(order)) {
+                <button 
+                  mat-raised-button 
+                  color="accent"
+                  (click)="shipOrder(order.id!)">
+                  <mat-icon>local_shipping</mat-icon>
+                  Expédier
+                </button>
+              }
+              @if (canDeliver(order)) {
+                <button 
+                  mat-raised-button 
+                  color="primary"
+                  (click)="deliverOrder(order.id!)">
+                  <mat-icon>done_all</mat-icon>
+                  Marquer livrée
+                </button>
+              }
+              @if (canCancel(order)) {
+                <button 
+                  mat-stroked-button 
+                  color="warn"
+                  (click)="cancelOrder(order.id!)">
+                  <mat-icon>cancel</mat-icon>
+                  Annuler
+                </button>
+              }
+            </div>
+          </mat-card>
+        }
+      </div>
+    }
+  </div>
+</div>

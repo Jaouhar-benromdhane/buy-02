@@ -13,7 +13,8 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { Product } from '../../../core/services/product';
 import { MediaService } from '../../../core/services/media';
-import { Cart } from '../../../core/services/cart';
+import { CartService } from '../../../core/services/cart-backend.service';
+import { AddToCartRequest } from '../../../core/models/cart.model';
 import { Auth } from '../../../core/services/auth';
 import { Product as ProductModel } from '../../../core/models/product.model';
 import { forkJoin, of } from 'rxjs';
@@ -47,7 +48,7 @@ export class ProductList implements OnInit {
   constructor(
     private productService: Product,
     private mediaService: MediaService,
-    private cartService: Cart,
+    private cartService: CartService,
     private authService: Auth,
     private router: Router,
     private snackBar: MatSnackBar
@@ -162,7 +163,14 @@ export class ProductList implements OnInit {
   }
 
   updateCartCount(): void {
-    this.cartCount = this.cartService.getCartCount();
+    this.cartService.getCartCount().subscribe({
+      next: (count) => {
+        this.cartCount = count;
+      },
+      error: () => {
+        this.cartCount = 0;
+      }
+    });
   }
 
   addToCart(product: any): void {
@@ -174,9 +182,18 @@ export class ProductList implements OnInit {
       return;
     }
 
-    // Vérifier si le panier ne dépasse pas le stock disponible
+    // Obtenir userId
+    const user = JSON.parse(localStorage.getItem('current_user') || '{}');
+    const userId = user.id || user.userId;
+
+    if (!userId) {
+      this.snackBar.open('Veuillez vous connecter', 'Fermer', { duration: 3000 });
+      return;
+    }
+
+    // Vérifier le stock
     const currentCart = this.cartService.getCartItems();
-    const existingItem = currentCart.find(item => item.productId === product.id);
+    const existingItem = currentCart.find((item: any) => item.productId === product.id);
     const currentQuantityInCart = existingItem ? existingItem.quantity : 0;
 
     if (currentQuantityInCart >= product.stock) {
@@ -187,22 +204,34 @@ export class ProductList implements OnInit {
       return;
     }
 
-    this.cartService.addToCart({
+    // Préparer la requête
+    const addToCartRequest: AddToCartRequest = {
+      userId: userId,
       productId: product.id,
-      name: product.name,
-      price: product.price,
+      productName: product.name,
+      productImage: product.imageUrl || null,
+      productPrice: product.price,
       quantity: 1,
-      imageUrl: product.imageUrl || null,
-      stock: product.stock // Ajouter le stock pour vérification ultérieure
-    });
+      sellerId: product.sellerId,
+      sellerName: product.sellerName
+    };
 
-    this.snackBar.open(`${product.name} ajouté au panier`, 'Voir le panier', {
-      duration: 3000,
-      horizontalPosition: 'center',
-      verticalPosition: 'bottom',
-      panelClass: ['success-snackbar']
-    }).onAction().subscribe(() => {
-      this.router.navigate(['/cart']);
+    // Ajouter au panier via API
+    this.cartService.addToCart(addToCartRequest).subscribe({
+      next: () => {
+        this.snackBar.open(`${product.name} ajouté au panier`, 'Voir le panier', {
+          duration: 3000,
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom',
+          panelClass: ['success-snackbar']
+        }).onAction().subscribe(() => {
+          this.router.navigate(['/cart']);
+        });
+      },
+      error: (error) => {
+        console.error('Error adding to cart:', error);
+        this.snackBar.open('Erreur lors de l\'ajout au panier', 'Fermer', { duration: 3000 });
+      }
     });
   }
 

@@ -10,7 +10,8 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { Product as ProductModel } from '../../../core/models/product.model';
 import { Product } from '../../../core/services/product';
 import { MediaService } from '../../../core/services/media';
-import { Cart } from '../../../core/services/cart';
+import { CartService } from '../../../core/services/cart-backend.service';
+import { AddToCartRequest } from '../../../core/models/cart.model';
 import { forkJoin, of } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
 
@@ -42,7 +43,7 @@ export class ProductDetail implements OnInit {
     private router: Router,
     private productService: Product,
     private mediaService: MediaService,
-    private cartService: Cart,
+    private cartService: CartService,
     private snackBar: MatSnackBar
   ) {}
 
@@ -112,9 +113,18 @@ export class ProductDetail implements OnInit {
   addToCart(): void {
     if (!this.product) return;
 
-    // Vérifier si le panier + la quantité actuelle ne dépasse pas le stock
+    // Obtenir userId
+    const user = JSON.parse(localStorage.getItem('current_user') || '{}');
+    const userId = user.id || user.userId;
+
+    if (!userId) {
+      this.snackBar.open('Veuillez vous connecter', 'Fermer', { duration: 3000 });
+      return;
+    }
+
+    // Vérifier le stock
     const currentCart = this.cartService.getCartItems();
-    const existingItem = currentCart.find(item => item.productId === this.product!.id);
+    const existingItem = currentCart.find((item: any) => item.productId === this.product!.id);
     const currentQuantityInCart = existingItem ? existingItem.quantity : 0;
 
     if (currentQuantityInCart + this.quantity > this.product.stock) {
@@ -134,28 +144,36 @@ export class ProductDetail implements OnInit {
       return;
     }
 
-    // Utiliser le service Cart
-    this.cartService.addToCart({
+    // Préparer la requête pour le backend
+    const addToCartRequest: AddToCartRequest = {
+      userId: userId,
       productId: this.product.id,
-      name: this.product.name,
-      price: this.product.price,
+      productName: this.product.name,
+      productImage: this.images[0] || null,
+      productPrice: this.product.price,
       quantity: this.quantity,
-      imageUrl: this.images[0] || null,
-      stock: this.product.stock
-    });
+      sellerId: this.product.sellerId,
+      sellerName: this.product.sellerName
+    };
 
-    // Notification
-    this.snackBar.open(`${this.quantity} x ${this.product.name} ajouté au panier`, 'Voir le panier', {
-      duration: 3000,
-      horizontalPosition: 'center',
-      verticalPosition: 'bottom',
-      panelClass: ['success-snackbar']
-    }).onAction().subscribe(() => {
-      this.router.navigate(['/cart']);
+    // Ajouter au panier via API
+    this.cartService.addToCart(addToCartRequest).subscribe({
+      next: () => {
+        this.snackBar.open(`${this.quantity} x ${this.product!.name} ajouté au panier`, 'Voir le panier', {
+          duration: 3000,
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom',
+          panelClass: ['success-snackbar']
+        }).onAction().subscribe(() => {
+          this.router.navigate(['/cart']);
+        });
+        this.quantity = 1;
+      },
+      error: (error) => {
+        console.error('Error adding to cart:', error);
+        this.snackBar.open('Erreur lors de l\'ajout au panier', 'Fermer', { duration: 3000 });
+      }
     });
-
-    // Reset quantity
-    this.quantity = 1;
   }
 
   goBack(): void {
