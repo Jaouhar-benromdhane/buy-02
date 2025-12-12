@@ -1,0 +1,94 @@
+<mat-toolbar color="primary" class="navbar">
+  <div class="navbar-container">
+    <!-- Logo / Brand -->
+    <a routerLink="/products" class="brand">
+      <mat-icon>shopping_bag</mat-icon>
+      <span class="brand-name">E-Commerce</span>
+    </a>
+
+    <!-- Spacer -->
+    <span class="spacer"></span>
+
+    <!-- Navigation Links -->
+    <div class="nav-links">
+      <!-- Common Links -->
+      <a mat-button routerLink="/products" routerLinkActive="active">
+        <mat-icon>store</mat-icon>
+        Produits
+      </a>
+
+      @if (!isSeller()) {
+        <!-- Client Links -->
+        <a mat-button routerLink="/cart" routerLinkActive="active">
+          <mat-icon [matBadge]="cartItemCount()" [matBadgeHidden]="cartItemCount() === 0" matBadgeColor="warn">
+            shopping_cart
+          </mat-icon>
+          Panier
+        </a>
+
+        <a mat-button routerLink="/orders" routerLinkActive="active">
+          <mat-icon>receipt_long</mat-icon>
+          Mes Commandes
+        </a>
+      } @else {
+        <!-- Seller Links -->
+        <a mat-button routerLink="/seller/orders" routerLinkActive="active">
+          <mat-icon>inventory_2</mat-icon>
+          Mes Ventes
+        </a>
+
+        <a mat-button routerLink="/seller/dashboard" routerLinkActive="active">
+          <mat-icon>dashboard</mat-icon>
+          Dashboard
+        </a>
+      }
+    </div>
+
+    <!-- User Menu -->
+    <button mat-icon-button [matMenuTriggerFor]="userMenu" class="user-menu-btn">
+      @if (currentUser()?.avatar) {
+        <img [src]="currentUser()?.avatar" [alt]="currentUser()?.name" class="user-avatar">
+      } @else {
+        <mat-icon>account_circle</mat-icon>
+      }
+    </button>
+
+    <mat-menu #userMenu="matMenu" xPosition="before">
+      <div class="user-menu-header">
+        <div class="user-info">
+          @if (currentUser()?.avatar) {
+            <img [src]="currentUser()?.avatar" [alt]="currentUser()?.name" class="menu-avatar">
+          } @else {
+            <div class="menu-avatar-placeholder">
+              <mat-icon>person</mat-icon>
+            </div>
+          }
+          <div class="user-details">
+            <span class="user-name">{{ currentUser()?.name }}</span>
+            <span class="user-email">{{ currentUser()?.email }}</span>
+            <span class="user-role">{{ isSeller() ? 'Vendeur' : 'Client' }}</span>
+          </div>
+        </div>
+      </div>
+
+      <mat-divider></mat-divider>
+
+      @if (isSeller()) {
+        <a mat-menu-item routerLink="/seller/profile">
+          <mat-icon>person</mat-icon>
+          <span>Mon Profil</span>
+        </a>
+      } @else {
+        <a mat-menu-item routerLink="/profile">
+          <mat-icon>person</mat-icon>
+          <span>Mon Profil</span>
+        </a>
+      }
+
+      <button mat-menu-item (click)="logout()">
+        <mat-icon>logout</mat-icon>
+        <span>Déconnexion</span>
+      </button>
+    </mat-menu>
+  </div>
+</mat-toolbar>

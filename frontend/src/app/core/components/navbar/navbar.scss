@@ -1,0 +1,166 @@
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+
+  .navbar-container {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 1rem;
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    text-decoration: none;
+    color: white;
+    font-size: 1.3rem;
+    font-weight: 700;
+    transition: opacity 0.2s;
+
+    &:hover {
+      opacity: 0.9;
+    }
+
+    mat-icon {
+      font-size: 28px;
+      width: 28px;
+      height: 28px;
+    }
+
+    .brand-name {
+      @media (max-width: 600px) {
+        display: none;
+      }
+    }
+  }
+
+  .spacer {
+    flex: 1;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 0.5rem;
+
+    a {
+      color: white;
+      font-weight: 500;
+
+      mat-icon {
+        margin-right: 0.25rem;
+      }
+
+      &.active {
+        background: rgba(255, 255, 255, 0.2);
+      }
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.15);
+      }
+    }
+
+    @media (max-width: 768px) {
+      gap: 0.25rem;
+
+      a {
+        padding: 0 8px;
+
+        span {
+          display: none;
+        }
+
+        mat-icon {
+          margin-right: 0;
+        }
+      }
+    }
+  }
+
+  .user-menu-btn {
+    margin-left: 1rem;
+    color: white;
+
+    .user-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    mat-icon {
+      font-size: 32px;
+      width: 32px;
+      height: 32px;
+    }
+  }
+}
+
+// User Menu Dropdown
+.user-menu-header {
+  padding: 1rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+
+  .user-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+
+    .menu-avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .menu-avatar-placeholder {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      mat-icon {
+        color: white;
+        font-size: 32px;
+        width: 32px;
+        height: 32px;
+      }
+    }
+
+    .user-details {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+
+      .user-name {
+        font-weight: 600;
+        font-size: 1rem;
+        color: white;
+      }
+
+      .user-email {
+        font-size: 0.85rem;
+        color: rgba(255, 255, 255, 0.9);
+      }
+
+      .user-role {
+        font-size: 0.75rem;
+        color: rgba(255, 255, 255, 0.8);
+        text-transform: uppercase;
+        font-weight: 500;
+      }
+    }
+  }
+}
+
+::ng-deep .mat-mdc-menu-panel {
+  min-width: 280px !important;
+}
