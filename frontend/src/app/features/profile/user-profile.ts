@@ -6,6 +6,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatChipsModule } from '@angular/material/chips';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { Router } from '@angular/router';
 import { Auth } from '../../core/services/auth';
 import { OrderService } from '../../core/services/order.service';
@@ -22,7 +23,8 @@ import { Order, OrderStatus } from '../../core/models/order.model';
     MatIconModule,
     MatToolbarModule,
     MatDividerModule,
-    MatChipsModule
+    MatChipsModule,
+    MatProgressSpinnerModule
   ],
   templateUrl: './user-profile.html',
   styleUrl: './user-profile.scss'
