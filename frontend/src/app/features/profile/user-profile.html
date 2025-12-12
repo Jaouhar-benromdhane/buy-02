@@ -1,0 +1,132 @@
+<div class="profile-container">
+  <!-- Toolbar -->
+  <mat-toolbar color="primary" class="toolbar">
+    <button mat-icon-button (click)="goBack()">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+    <span class="title">👤 Mon Profil</span>
+    <span class="spacer"></span>
+    <button mat-icon-button (click)="logout()" matTooltip="Déconnexion">
+      <mat-icon>logout</mat-icon>
+    </button>
+  </mat-toolbar>
+
+  <div class="content">
+    @if (loading()) {
+      <!-- Loading -->
+      <div class="loading-container">
+        <mat-spinner></mat-spinner>
+      </div>
+    } @else if (user()) {
+      <div class="profile-content">
+        <!-- User Info Card -->
+        <mat-card class="user-card">
+          <div class="user-header">
+            <div class="avatar-container">
+              @if (user()?.avatar) {
+                <img [src]="user()?.avatar" [alt]="user()?.name" class="avatar">
+              } @else {
+                <div class="avatar-placeholder">
+                  <mat-icon>person</mat-icon>
+                </div>
+              }
+            </div>
+            <div class="user-info">
+              <h2>{{ user()?.name }}</h2>
+              <p class="email">{{ user()?.email }}</p>
+              <mat-chip class="role-chip">
+                <mat-icon>{{ user()?.role === 'SELLER' ? 'store' : 'person' }}</mat-icon>
+                {{ user()?.role === 'SELLER' ? 'Vendeur' : 'Client' }}
+              </mat-chip>
+            </div>
+          </div>
+
+          <mat-divider></mat-divider>
+
+          <div class="actions">
+            <button mat-raised-button color="primary" (click)="editProfile()">
+              <mat-icon>edit</mat-icon>
+              Modifier le profil
+            </button>
+            <button mat-stroked-button (click)="viewOrders()">
+              <mat-icon>receipt_long</mat-icon>
+              Voir mes commandes
+            </button>
+          </div>
+        </mat-card>
+
+        <!-- Statistics Grid -->
+        <div class="stats-grid">
+          <mat-card class="stat-card">
+            <div class="stat-icon-wrapper total">
+              <mat-icon>shopping_bag</mat-icon>
+            </div>
+            <div class="stat-content">
+              <span class="stat-label">Total commandes</span>
+              <span class="stat-value">{{ totalOrders() }}</span>
+            </div>
+          </mat-card>
+
+          <mat-card class="stat-card">
+            <div class="stat-icon-wrapper spent">
+              <mat-icon>euro</mat-icon>
+            </div>
+            <div class="stat-content">
+              <span class="stat-label">Total dépensé</span>
+              <span class="stat-value">{{ totalSpent() | number:'1.2-2' }} €</span>
+            </div>
+          </mat-card>
+
+          <mat-card class="stat-card">
+            <div class="stat-icon-wrapper pending">
+              <mat-icon>schedule</mat-icon>
+            </div>
+            <div class="stat-content">
+              <span class="stat-label">En cours</span>
+              <span class="stat-value">{{ pendingOrders() }}</span>
+            </div>
+          </mat-card>
+
+          <mat-card class="stat-card">
+            <div class="stat-icon-wrapper delivered">
+              <mat-icon>done_all</mat-icon>
+            </div>
+            <div class="stat-content">
+              <span class="stat-label">Livrées</span>
+              <span class="stat-value">{{ deliveredOrders() }}</span>
+            </div>
+          </mat-card>
+        </div>
+
+        <!-- Recent Orders Preview -->
+        @if (orders().length > 0) {
+          <mat-card class="recent-orders-card">
+            <h3>
+              <mat-icon>history</mat-icon>
+              Dernières commandes
+            </h3>
+            <mat-divider></mat-divider>
+            <div class="orders-preview">
+              @for (order of orders().slice(0, 3); track order.id) {
+                <div class="order-preview-item">
+                  <div class="order-preview-info">
+                    <span class="order-number">{{ order.orderNumber }}</span>
+                    <span class="order-date">{{ order.createdAt | date:'dd/MM/yyyy' }}</span>
+                  </div>
+                  <div class="order-preview-details">
+                    <span class="order-items-count">{{ order.items.length }} article(s)</span>
+                    <span class="order-amount">{{ order.totalAmount | number:'1.2-2' }} €</span>
+                  </div>
+                </div>
+              }
+            </div>
+            <button mat-stroked-button class="view-all-btn" (click)="viewOrders()">
+              Voir toutes les commandes
+              <mat-icon>arrow_forward</mat-icon>
+            </button>
+          </mat-card>
+        }
+      </div>
+    }
+  </div>
+</div>

@@ -79,7 +79,7 @@
               <div class="customer-info">
                 <strong>Client</strong>
                 <span>{{ order.shippingAddress.fullName }}</span>
-                <span class="customer-phone">{{ order.shippingAddress.phoneNumber }}</span>
+                <span class="customer-phone">{{ order.shippingAddress.phone }}</span>
               </div>
             </div>
 
@@ -88,7 +88,7 @@
               <mat-icon>location_on</mat-icon>
               <div class="address-info">
                 <strong>Adresse de livraison</strong>
-                <span>{{ order.shippingAddress.street }}</span>
+                <span>{{ order.shippingAddress.address }}</span>
                 <span>{{ order.shippingAddress.postalCode }} {{ order.shippingAddress.city }}</span>
                 <span>{{ order.shippingAddress.country }}</span>
               </div>
@@ -107,7 +107,7 @@
                     <span class="item-name">{{ item.productName }}</span>
                     <span class="item-quantity">Quantité: {{ item.quantity }}</span>
                   </div>
-                  <span class="item-price">{{ item.price * item.quantity | number:'1.2-2' }} €</span>
+                  <span class="item-price">{{ item.unitPrice * item.quantity | number:'1.2-2' }} €</span>
                 </div>
               }
             </div>

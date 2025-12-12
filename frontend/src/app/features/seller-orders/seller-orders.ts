@@ -116,7 +116,8 @@ export class SellerOrdersPage implements OnInit {
     });
   }
 
-  getStatusLabel(status: OrderStatus): string {
+  getStatusLabel(status?: OrderStatus): string {
+    if (!status) return 'Inconnu';
     const statusMap: Record<OrderStatus, string> = {
       [OrderStatus.PENDING]: 'En attente',
       [OrderStatus.CONFIRMED]: 'Confirmée',
@@ -127,7 +128,8 @@ export class SellerOrdersPage implements OnInit {
     return statusMap[status] || status;
   }
 
-  getStatusColor(status: OrderStatus): string {
+  getStatusColor(status?: OrderStatus): string {
+    if (!status) return '';
     const colorMap: Record<OrderStatus, string> = {
       [OrderStatus.PENDING]: 'warn',
       [OrderStatus.CONFIRMED]: 'primary',
@@ -138,7 +140,8 @@ export class SellerOrdersPage implements OnInit {
     return colorMap[status] || '';
   }
 
-  getStatusIcon(status: OrderStatus): string {
+  getStatusIcon(status?: OrderStatus): string {
+    if (!status) return 'help';
     const iconMap: Record<OrderStatus, string> = {
       [OrderStatus.PENDING]: 'schedule',
       [OrderStatus.CONFIRMED]: 'check_circle',

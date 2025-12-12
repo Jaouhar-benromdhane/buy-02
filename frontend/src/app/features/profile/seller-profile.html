@@ -1,0 +1,196 @@
+<div class="seller-profile-container">
+  <!-- Toolbar -->
+  <mat-toolbar color="primary" class="toolbar">
+    <button mat-icon-button (click)="goBack()">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+    <span class="title">🏪 Mon Profil Vendeur</span>
+    <span class="spacer"></span>
+    <button mat-icon-button (click)="logout()" matTooltip="Déconnexion">
+      <mat-icon>logout</mat-icon>
+    </button>
+  </mat-toolbar>
+
+  <div class="content">
+    @if (loading()) {
+      <!-- Loading -->
+      <div class="loading-container">
+        <mat-spinner></mat-spinner>
+      </div>
+    } @else if (user()) {
+      <div class="profile-content">
+        <!-- Seller Info Card -->
+        <mat-card class="seller-card">
+          <div class="seller-header">
+            <div class="avatar-container">
+              @if (user()?.avatar) {
+                <img [src]="user()?.avatar" [alt]="user()?.name" class="avatar">
+              } @else {
+                <div class="avatar-placeholder">
+                  <mat-icon>store</mat-icon>
+                </div>
+              }
+            </div>
+            <div class="seller-info">
+              <h2>{{ user()?.name }}</h2>
+              <p class="email">{{ user()?.email }}</p>
+              <mat-chip class="role-chip">
+                <mat-icon>store</mat-icon>
+                Vendeur Professionnel
+              </mat-chip>
+            </div>
+          </div>
+
+          <mat-divider></mat-divider>
+
+          <div class="actions">
+            <button mat-raised-button color="primary" (click)="editProfile()">
+              <mat-icon>edit</mat-icon>
+              Modifier le profil
+            </button>
+            <button mat-stroked-button color="accent" (click)="viewOrders()">
+              <mat-icon>receipt_long</mat-icon>
+              Gérer mes commandes
+            </button>
+            <button mat-stroked-button (click)="viewDashboard()">
+              <mat-icon>dashboard</mat-icon>
+              Tableau de bord
+            </button>
+          </div>
+        </mat-card>
+
+        <!-- Statistics Grid -->
+        <div class="stats-grid">
+          <mat-card class="stat-card">
+            <div class="stat-icon-wrapper sales">
+              <mat-icon>shopping_cart</mat-icon>
+            </div>
+            <div class="stat-content">
+              <span class="stat-label">Total ventes</span>
+              <span class="stat-value">{{ totalSales() }}</span>
+            </div>
+          </mat-card>
+
+          <mat-card class="stat-card">
+            <div class="stat-icon-wrapper revenue">
+              <mat-icon>euro</mat-icon>
+            </div>
+            <div class="stat-content">
+              <span class="stat-label">Chiffre d'affaires</span>
+              <span class="stat-value">{{ totalRevenue() | number:'1.2-2' }} €</span>
+            </div>
+          </mat-card>
+
+          <mat-card class="stat-card">
+            <div class="stat-icon-wrapper pending">
+              <mat-icon>hourglass_empty</mat-icon>
+            </div>
+            <div class="stat-content">
+              <span class="stat-label">En cours</span>
+              <span class="stat-value">{{ pendingOrders() }}</span>
+            </div>
+          </mat-card>
+
+          <mat-card class="stat-card">
+            <div class="stat-icon-wrapper completed">
+              <mat-icon>check_circle</mat-icon>
+            </div>
+            <div class="stat-content">
+              <span class="stat-label">Complétées</span>
+              <span class="stat-value">{{ completedOrders() }}</span>
+            </div>
+          </mat-card>
+
+          <mat-card class="stat-card">
+            <div class="stat-icon-wrapper products">
+              <mat-icon>inventory</mat-icon>
+            </div>
+            <div class="stat-content">
+              <span class="stat-label">Produits vendus</span>
+              <span class="stat-value">{{ activeProducts() }}</span>
+            </div>
+          </mat-card>
+        </div>
+
+        <!-- Performance Summary -->
+        <mat-card class="performance-card">
+          <h3>
+            <mat-icon>trending_up</mat-icon>
+            Résumé des performances
+          </h3>
+          <mat-divider></mat-divider>
+          
+          <div class="performance-grid">
+            <div class="performance-item">
+              <span class="performance-label">Taux de complétion</span>
+              <div class="performance-bar">
+                <div 
+                  class="performance-fill" 
+                  [style.width.%]="totalSales() > 0 ? (completedOrders() / totalSales() * 100) : 0">
+                </div>
+              </div>
+              <span class="performance-value">
+                {{ totalSales() > 0 ? (completedOrders() / totalSales() * 100 | number:'1.0-0') : 0 }}%
+              </span>
+            </div>
+
+            <div class="performance-item">
+              <span class="performance-label">Commandes en attente</span>
+              <div class="performance-bar pending">
+                <div 
+                  class="performance-fill" 
+                  [style.width.%]="totalSales() > 0 ? (pendingOrders() / totalSales() * 100) : 0">
+                </div>
+              </div>
+              <span class="performance-value">
+                {{ totalSales() > 0 ? (pendingOrders() / totalSales() * 100 | number:'1.0-0') : 0 }}%
+              </span>
+            </div>
+
+            <div class="performance-item">
+              <span class="performance-label">Revenu moyen par vente</span>
+              <span class="performance-value-large">
+                {{ totalSales() > 0 ? (totalRevenue() / totalSales() | number:'1.2-2') : 0 }} €
+              </span>
+            </div>
+          </div>
+        </mat-card>
+
+        <!-- Recent Sales Preview -->
+        @if (orders().length > 0) {
+          <mat-card class="recent-sales-card">
+            <h3>
+              <mat-icon>history</mat-icon>
+              Dernières ventes
+            </h3>
+            <mat-divider></mat-divider>
+            <div class="sales-preview">
+              @for (order of orders().slice(0, 5); track order.id) {
+                <div class="sale-preview-item">
+                  <div class="sale-preview-info">
+                    <span class="order-number">{{ order.orderNumber }}</span>
+                    <span class="customer-name">Client: {{ order.userName }}</span>
+                    <span class="order-date">{{ order.createdAt | date:'dd/MM/yyyy à HH:mm' }}</span>
+                  </div>
+                  <div class="sale-preview-details">
+                    <mat-chip [class]="'status-chip status-' + order.status">
+                      {{ order.status === 'PENDING' ? 'En attente' : 
+                         order.status === 'CONFIRMED' ? 'Confirmée' :
+                         order.status === 'SHIPPED' ? 'Expédiée' :
+                         order.status === 'DELIVERED' ? 'Livrée' : 'Annulée' }}
+                    </mat-chip>
+                    <span class="sale-amount">{{ order.totalAmount | number:'1.2-2' }} €</span>
+                  </div>
+                </div>
+              }
+            </div>
+            <button mat-stroked-button class="view-all-btn" (click)="viewOrders()">
+              Voir toutes les commandes
+              <mat-icon>arrow_forward</mat-icon>
+            </button>
+          </mat-card>
+        }
+      </div>
+    }
+  </div>
+</div>
