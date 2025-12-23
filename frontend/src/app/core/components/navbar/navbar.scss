@@ -4,6 +4,31 @@
   z-index: 1000;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 
+  // Client navbar - light blue
+  &:not(.seller-navbar) {
+    background: linear-gradient(135deg, #1976d2 0%, #42a5f5 100%) !important;
+    
+    ::ng-deep .mat-toolbar {
+      background: transparent !important;
+    }
+  }
+
+  // Seller navbar - orange
+  &.seller-navbar {
+    background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%) !important;
+    
+    ::ng-deep .mat-toolbar {
+      background: transparent !important;
+    }
+  }
+
+  // Force white text on all navbar elements
+  ::ng-deep {
+    .mat-toolbar {
+      color: white !important;
+    }
+  }
+
   .navbar-container {
     display: flex;
     align-items: center;
@@ -18,7 +43,7 @@
     align-items: center;
     gap: 0.5rem;
     text-decoration: none;
-    color: white;
+    color: white !important;
     font-size: 1.3rem;
     font-weight: 700;
     transition: opacity 0.2s;
@@ -49,11 +74,16 @@
     gap: 0.5rem;
 
     a {
-      color: white;
+      color: white !important;
       font-weight: 500;
 
       mat-icon {
         margin-right: 0.25rem;
+        color: white !important;
+      }
+
+      span {
+        color: white !important;
       }
 
       &.active {
@@ -84,7 +114,7 @@
 
   .user-menu-btn {
     margin-left: 1rem;
-    color: white;
+    color: white !important;
 
     .user-avatar {
       width: 32px;
@@ -96,6 +126,7 @@
     mat-icon {
       font-size: 32px;
       width: 32px;
+      color: white !important;
       height: 32px;
     }
   }

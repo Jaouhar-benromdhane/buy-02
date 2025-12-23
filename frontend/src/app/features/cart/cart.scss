@@ -213,3 +213,29 @@
     }
   }
 }
+
+
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.5rem 2rem;
+  background: white;
+  border-bottom: 1px solid #e0e0e0;
+  margin-bottom: 1.5rem;
+
+  h1 {
+    margin: 0;
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: #333;
+  }
+
+  .search-field {
+    min-width: 300px;
+  }
+
+  button {
+    margin-left: 1rem;
+  }
+}

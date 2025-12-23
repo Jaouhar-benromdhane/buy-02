@@ -1,4 +1,4 @@
-<mat-toolbar color="primary" class="navbar">
+<mat-toolbar color="primary" [class.seller-navbar]="isSeller()" class="navbar">
   <div class="navbar-container">
     <!-- Logo / Brand -->
     <a routerLink="/products" class="brand">
@@ -33,7 +33,9 @@
       } @else {
         <!-- Seller Links -->
         <a mat-button routerLink="/seller/orders" routerLinkActive="active">
-          <mat-icon>inventory_2</mat-icon>
+          <mat-icon [matBadge]="pendingOrdersCount()" [matBadgeHidden]="pendingOrdersCount() === 0" matBadgeColor="warn">
+            inventory_2
+          </mat-icon>
           Mes Ventes
         </a>
 
@@ -45,7 +47,7 @@
     </div>
 
     <!-- User Menu -->
-    <button mat-icon-button [matMenuTriggerFor]="userMenu" class="user-menu-btn">
+    <button mat-icon-button [matMenuTriggerFor]="userMenu" class="user-menu-btn" matTooltip="Mon compte">
       @if (currentUser()?.avatar) {
         <img [src]="currentUser()?.avatar" [alt]="currentUser()?.name" class="user-avatar">
       } @else {

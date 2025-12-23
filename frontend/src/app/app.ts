@@ -19,20 +19,20 @@ export class App {
     private router: Router,
     private authService: Auth
   ) {
+    // Initial check immediately
+    this.updateNavbarVisibility();
+    
     // Update navbar visibility on route changes
     this.router.events
       .pipe(filter(event => event instanceof NavigationEnd))
       .subscribe(() => {
         this.updateNavbarVisibility();
       });
-    
-    // Initial check
-    this.updateNavbarVisibility();
   }
 
   private updateNavbarVisibility(): void {
     const currentUrl = this.router.url;
-    const isAuthPage = currentUrl.includes('/login') || currentUrl.includes('/register');
+    const isAuthPage = currentUrl === '/login' || currentUrl === '/register' || currentUrl === '/';
     const isLoggedIn = !!this.authService.getCurrentUser();
     
     this.showNavbar.set(isLoggedIn && !isAuthPage);

@@ -1,23 +1,7 @@
 <div class="dashboard-container">
-  <!-- Toolbar -->
-  <mat-toolbar color="primary" class="toolbar">
-    <span class="title">📊 Tableau de bord Vendeur</span>
-    <span class="spacer"></span>
-    @if (currentUser && currentUser.avatar) {
-      <img [src]="getAvatarUrl(currentUser.avatar)" alt="Avatar" class="avatar">
-    }
-    @if (currentUser && !currentUser.avatar) {
-      <mat-icon class="avatar-icon">account_circle</mat-icon>
-    }
-    <button mat-button (click)="viewProducts()">
-      <mat-icon>storefront</mat-icon>
-      Voir la boutique
-    </button>
-    <button mat-raised-button color="warn" (click)="logout()">
-      <mat-icon>logout</mat-icon>
-      Déconnexion
-    </button>
-  </mat-toolbar>
+  <div class="page-header">
+    <h1>📊Tableau de bord Vendeur</h1>
+  </div>
 
   <div class="content">
     <!-- Header avec bouton ajouter -->

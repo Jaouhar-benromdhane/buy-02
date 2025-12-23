@@ -1,30 +1,13 @@
 <div class="product-list-container">
-  <!-- Header avec recherche et déconnexion -->
-  <mat-toolbar color="primary" class="toolbar">
-    <span class="title">🛒 Boutique E-Commerce</span>
-    
-    <span class="spacer"></span>
-    
-    <!-- Barre de recherche -->
+  <div class="page-header">
+    <h1>🛒 Boutique E-Commerce</h1>
     <mat-form-field appearance="outline" class="search-field">
       <mat-label>Rechercher un produit</mat-label>
       <input matInput [(ngModel)]="searchKeyword" (keyup.enter)="onSearch()" placeholder="Ex: Ordinateur">
       <mat-icon matPrefix>search</mat-icon>
     </mat-form-field>
+  </div>
 
-    <!-- Bouton Panier avec badge -->
-    <button mat-icon-button class="cart-button" (click)="goToCart()">
-      <mat-icon [matBadge]="cartCount" matBadgeColor="warn" [matBadgeHidden]="cartCount === 0">shopping_cart</mat-icon>
-    </button>
-    
-    <!-- Bouton déconnexion -->
-    <button mat-raised-button color="warn" (click)="logout()">
-      <mat-icon>logout</mat-icon>
-      Déconnexion
-    </button>
-  </mat-toolbar>
-
-  <!-- Contenu principal -->
   <div class="content">
     <!-- Message de chargement -->
     @if (loading) {
@@ -80,9 +63,13 @@
               </mat-card-content>
               
               <mat-card-actions>
-                <button mat-raised-button color="primary" (click)="addToCart(product)">
-                  <mat-icon>shopping_cart</mat-icon>
-                  Ajouter au panier
+                <button 
+                  mat-raised-button 
+                  [color]="product.stock > 0 ? 'primary' : 'warn'"
+                  (click)="addToCart(product)"
+                  [disabled]="product.stock === 0">
+                  <mat-icon>{{ product.stock > 0 ? 'shopping_cart' : 'remove_shopping_cart' }}</mat-icon>
+                  {{ product.stock > 0 ? 'Ajouter au panier' : 'Rupture de stock' }}
                 </button>
                 <button mat-button color="accent" (click)="viewDetails(product.id)">
                   <mat-icon>info</mat-icon>

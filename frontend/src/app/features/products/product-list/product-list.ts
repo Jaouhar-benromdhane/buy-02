@@ -191,6 +191,15 @@ export class ProductList implements OnInit {
       return;
     }
 
+    // Vérifier que le vendeur n'achète pas son propre produit
+    if (userId === product.sellerId) {
+      this.snackBar.open('Vous ne pouvez pas acheter vos propres produits', 'Fermer', { 
+        duration: 3000,
+        panelClass: ['error-snackbar']
+      });
+      return;
+    }
+
     // Vérifier le stock
     const currentCart = this.cartService.getCartItems();
     const existingItem = currentCart.find((item: any) => item.productId === product.id);

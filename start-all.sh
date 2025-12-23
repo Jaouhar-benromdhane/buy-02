@@ -49,7 +49,7 @@ fi
 
 # Démarrer Docker Compose (MongoDB, Kafka, Zookeeper)
 echo -e "${YELLOW}[4/6] Demarrage de Docker Compose (MongoDB, Kafka, Zookeeper)...${NC}"
-docker-compose up -d
+sudo docker-compose up -d
 sleep 10
 echo -e "${GREEN}  ✓ Docker Compose demarre${NC}"
 
@@ -58,25 +58,25 @@ echo -e "${YELLOW}[5/6] Demarrage des services backend...${NC}"
 
 echo -e "${CYAN}  - User Service (port 8081)...${NC}"
 cd backend/user-service
-java -jar target/user-service-1.0.0.jar > /dev/null 2>&1 &
+java -jar target/user-service-1.0.0.jar > user.log 2>&1 &
 cd ../..
 sleep 5
 
 echo -e "${CYAN}  - Product Service (port 8082)...${NC}"
 cd backend/product-service
-java -jar target/product-service-1.0.0.jar > /dev/null 2>&1 &
+java -jar target/product-service-1.0.0.jar > product.log 2>&1 &
 cd ../..
 sleep 3
 
 echo -e "${CYAN}  - Media Service (port 8083)...${NC}"
 cd backend/media-service
-java -jar target/media-service-1.0.0.jar > /dev/null 2>&1 &
+java -jar target/media-service-1.0.0.jar > media.log 2>&1 &
 cd ../..
 sleep 3
 
 echo -e "${CYAN}  - Order Service (port 8084)...${NC}"
 cd backend/order-service
-java -jar target/order-service-1.0.0.jar > /dev/null 2>&1 &
+java -jar target/order-service-1.0.0.jar > order.log 2>&1 &
 cd ../..
 sleep 5
 
@@ -84,9 +84,24 @@ echo -e "${GREEN}  ✓ Services backend demarres${NC}"
 
 # Démarrer le frontend
 echo -e "${YELLOW}[6/6] Demarrage du frontend Angular...${NC}"
+
+# Tuer les anciens processus Angular sur port 4200
+pkill -f "ng serve" 2>/dev/null
+lsof -ti:4200 | xargs kill -9 2>/dev/null
+
 cd frontend
-npm start > /dev/null 2>&1 &
+npm start > angular.log 2>&1 &
+ANGULAR_PID=$!
 cd ..
+
+echo -e "${CYAN}  - Attente du demarrage d'Angular (30s max)...${NC}"
+for i in {1..30}; do
+    if curl -k -s https://localhost:4200 > /dev/null 2>&1; then
+        echo -e "${GREEN}  ✓ Angular demarre sur port 4200${NC}"
+        break
+    fi
+    sleep 1
+done
 
 echo ""
 echo -e "${GREEN}========================================${NC}"
