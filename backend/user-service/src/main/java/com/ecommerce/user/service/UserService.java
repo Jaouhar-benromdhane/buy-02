@@ -253,8 +253,8 @@ public class UserService {
             Path filePath = uploadPath.resolve(filename);
             Files.copy(file.getInputStream(), filePath);
             
-            // Construire l'URL relative
-            String avatarUrl = "/uploads/avatars/" + filename;
+            // Construire l'URL complète
+            String avatarUrl = "https://localhost:8081/uploads/avatars/" + filename;
             
             // Mettre à jour l'utilisateur
             user.setAvatar(avatarUrl);
