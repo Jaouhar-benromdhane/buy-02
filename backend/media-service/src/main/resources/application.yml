@@ -12,7 +12,7 @@ spring:
     name: media-service
   data:
     mongodb:
-      uri: mongodb://localhost:27017/ecommerce_media
+      uri: mongodb://admin:admin123@localhost:27017/ecommerce_media?authSource=admin
   servlet:
     multipart:
       enabled: true

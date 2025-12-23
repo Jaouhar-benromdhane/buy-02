@@ -18,7 +18,7 @@ spring:
   # MONGODB CONFIGURATION
   data:
     mongodb:
-      uri: mongodb://localhost:27017/ecommerce_products
+      uri: mongodb://admin:admin123@localhost:27017/ecommerce_products?authSource=admin
   
   # KAFKA CONFIGURATION (Producer)
   kafka:
