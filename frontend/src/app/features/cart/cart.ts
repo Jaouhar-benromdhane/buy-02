@@ -68,15 +68,13 @@ export class CartPage implements OnInit {
   increaseQuantity(item: CartItem): void {
     if (!item.id) return;
     
-    // Vérifier le stock en temps réel depuis l'API
+    // Vérifier le stock actuel en temps réel depuis l'API
     this.productService.getProductById(item.productId).subscribe({
       next: (product) => {
-        if (item.quantity + 1 > product.stock) {
-          this.snackBar.open(`Stock insuffisant ! Seulement ${product.stock} disponible(s)`, 'Fermer', {
-            duration: 3000,
-            panelClass: ['error-snackbar']
-          });
-        } else {
+        const currentStock = product.stock;
+        
+        if (item.quantity < currentStock) {
+          // Stock suffisant, on peut augmenter
           this.cartService.updateQuantity(item.id!, item.quantity + 1).subscribe({
             next: () => {
               this.snackBar.open('Quantité mise à jour', 'Fermer', { duration: 2000 });
@@ -85,6 +83,12 @@ export class CartPage implements OnInit {
               console.error('Error updating quantity:', error);
               this.snackBar.open('Erreur lors de la mise à jour', 'Fermer', { duration: 3000 });
             }
+          });
+        } else {
+          // Stock insuffisant
+          this.snackBar.open(`Stock insuffisant. Disponible: ${currentStock}`, 'Fermer', {
+            duration: 3000,
+            panelClass: ['error-snackbar']
           });
         }
       },

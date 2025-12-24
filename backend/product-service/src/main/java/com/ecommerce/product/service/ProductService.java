@@ -201,26 +201,26 @@ public class ProductService {
     }
     
     /**
-     * Decrease stock when a product is purchased
+     * DÉDUIRE LE STOCK (appelé par Order Service)
+     * 
+     * @param productId ID du produit
+     * @param quantity Quantité à déduire
+     * @return Produit mis à jour
      */
-    public Product decreaseStock(String productId, int quantity) {
+    public ProductResponse decreaseStock(String productId, int quantity) {
         Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new RuntimeException("Product not found"));
+            .orElseThrow(() -> new RuntimeException("Product not found"));
         
-        if (quantity <= 0) {
-            throw new IllegalArgumentException("Quantity must be positive");
-        }
-        
+        // Vérifier stock suffisant
         if (product.getStock() < quantity) {
-            throw new IllegalArgumentException(
-                "Insufficient stock. Available: " + product.getStock() + ", Requested: " + quantity
-            );
+            throw new RuntimeException("Stock insuffisant. Disponible: " + product.getStock() + ", Demandé: " + quantity);
         }
         
-        // Decrease stock
+        // Déduire le stock
         product.setStock(product.getStock() - quantity);
         product.setUpdatedAt(LocalDateTime.now());
         
-        return productRepository.save(product);
+        Product savedProduct = productRepository.save(product);
+        return toResponse(savedProduct);
     }
 }

@@ -11,7 +11,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.client.RestClientException;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -26,7 +26,9 @@ public class OrderService {
     
     private final OrderRepository orderRepository;
     private final RestTemplate restTemplate = new RestTemplate();
-    private static final String PRODUCT_SERVICE_URL = "https://localhost:8082/api/products";
+    
+    @Value("${product.service.url:https://localhost:8082}")
+    private String productServiceUrl;
     
     /**
      * Créer une nouvelle commande
@@ -68,13 +70,12 @@ public class OrderService {
         // Déduire le stock pour chaque produit
         for (OrderItem item : savedOrder.getItems()) {
             try {
-                String url = PRODUCT_SERVICE_URL + "/" + item.getProductId() + "/decrease-stock?quantity=" + item.getQuantity();
+                String url = productServiceUrl + "/api/products/" + item.getProductId() + "/decrease-stock?quantity=" + item.getQuantity();
+                log.info("Decreasing stock for product: {} quantity: {}", item.getProductId(), item.getQuantity());
                 restTemplate.put(url, null);
-                log.info("Stock decreased for product: {} (quantity: {})", item.getProductId(), item.getQuantity());
-            } catch (RestClientException e) {
-                log.error("Failed to decrease stock for product: {}", item.getProductId(), e);
-                // Note: La commande est déjà créée, on log juste l'erreur
-                // Dans un système de production, on devrait gérer ça avec un système de compensation
+            } catch (Exception e) {
+                log.error("Failed to decrease stock for product {}: {}", item.getProductId(), e.getMessage());
+                // Note: On continue même en cas d'erreur (à améliorer avec compensation)
             }
         }
         

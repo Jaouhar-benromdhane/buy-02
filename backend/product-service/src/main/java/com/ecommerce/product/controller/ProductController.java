@@ -2,7 +2,6 @@ package com.ecommerce.product.controller;
 
 import com.ecommerce.product.dto.ProductRequest;
 import com.ecommerce.product.dto.ProductResponse;
-import com.ecommerce.product.model.Product;
 import com.ecommerce.product.service.ProductService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -171,27 +170,20 @@ public class ProductController {
     }
     
     /**
-     * DECREASE STOCK (For order processing)
-     * Called by Order Service when a purchase is made
+     * DECREASE STOCK (PUBLIC - called by Order Service)
+     * Déduire le stock quand une commande est créée
      */
     @PutMapping("/{id}/decrease-stock")
     public ResponseEntity<?> decreaseStock(
-            @PathVariable String id,
+            @PathVariable String id, 
             @RequestParam int quantity) {
-        
         try {
-            Product product = productService.decreaseStock(id, quantity);
+            ProductResponse product = productService.decreaseStock(id, quantity);
             return ResponseEntity.ok(product);
-            
-        } catch (IllegalArgumentException e) {
-            Map<String, String> error = new HashMap<>();
-            error.put("error", e.getMessage());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
-            
         } catch (RuntimeException e) {
             Map<String, String> error = new HashMap<>();
             error.put("error", e.getMessage());
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
         }
     }
 }
