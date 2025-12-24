@@ -2,6 +2,7 @@ package com.ecommerce.product.controller;
 
 import com.ecommerce.product.dto.ProductRequest;
 import com.ecommerce.product.dto.ProductResponse;
+import com.ecommerce.product.model.Product;
 import com.ecommerce.product.service.ProductService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -165,6 +166,31 @@ public class ProductController {
             if (e.getMessage().contains("not authorized")) {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).body(error);
             }
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+        }
+    }
+    
+    /**
+     * DECREASE STOCK (For order processing)
+     * Called by Order Service when a purchase is made
+     */
+    @PutMapping("/{id}/decrease-stock")
+    public ResponseEntity<?> decreaseStock(
+            @PathVariable String id,
+            @RequestParam int quantity) {
+        
+        try {
+            Product product = productService.decreaseStock(id, quantity);
+            return ResponseEntity.ok(product);
+            
+        } catch (IllegalArgumentException e) {
+            Map<String, String> error = new HashMap<>();
+            error.put("error", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+            
+        } catch (RuntimeException e) {
+            Map<String, String> error = new HashMap<>();
+            error.put("error", e.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
         }
     }

@@ -199,4 +199,28 @@ public class ProductService {
             product.getUpdatedAt()
         );
     }
+    
+    /**
+     * Decrease stock when a product is purchased
+     */
+    public Product decreaseStock(String productId, int quantity) {
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new RuntimeException("Product not found"));
+        
+        if (quantity <= 0) {
+            throw new IllegalArgumentException("Quantity must be positive");
+        }
+        
+        if (product.getStock() < quantity) {
+            throw new IllegalArgumentException(
+                "Insufficient stock. Available: " + product.getStock() + ", Requested: " + quantity
+            );
+        }
+        
+        // Decrease stock
+        product.setStock(product.getStock() - quantity);
+        product.setUpdatedAt(LocalDateTime.now());
+        
+        return productRepository.save(product);
+    }
 }

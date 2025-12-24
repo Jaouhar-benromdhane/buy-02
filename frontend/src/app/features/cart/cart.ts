@@ -11,6 +11,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { CartService } from '../../core/services/cart-backend.service';
+import { ProductService } from '../../core/services/product.service';
 import { CartItem } from '../../core/models/cart.model';
 
 @Component({
@@ -38,6 +39,7 @@ export class CartPage implements OnInit {
 
   constructor(
     private cartService: CartService,
+    private productService: ProductService,
     private router: Router,
     private snackBar: MatSnackBar
   ) {}
@@ -66,24 +68,31 @@ export class CartPage implements OnInit {
   increaseQuantity(item: CartItem): void {
     if (!item.id) return;
     
-    // Vérifier si on peut augmenter la quantité (stock disponible)
-    const stock = item.stock ?? Infinity;
-    if (item.quantity < stock) {
-      this.cartService.updateQuantity(item.id, item.quantity + 1).subscribe({
-        next: () => {
-          this.snackBar.open('Quantité mise à jour', 'Fermer', { duration: 2000 });
-        },
-        error: (error) => {
-          console.error('Error updating quantity:', error);
-          this.snackBar.open('Erreur lors de la mise à jour', 'Fermer', { duration: 3000 });
+    // Vérifier le stock en temps réel depuis l'API
+    this.productService.getProductById(item.productId).subscribe({
+      next: (product) => {
+        if (item.quantity + 1 > product.stock) {
+          this.snackBar.open(`Stock insuffisant ! Seulement ${product.stock} disponible(s)`, 'Fermer', {
+            duration: 3000,
+            panelClass: ['error-snackbar']
+          });
+        } else {
+          this.cartService.updateQuantity(item.id!, item.quantity + 1).subscribe({
+            next: () => {
+              this.snackBar.open('Quantité mise à jour', 'Fermer', { duration: 2000 });
+            },
+            error: (error) => {
+              console.error('Error updating quantity:', error);
+              this.snackBar.open('Erreur lors de la mise à jour', 'Fermer', { duration: 3000 });
+            }
+          });
         }
-      });
-    } else {
-      this.snackBar.open(`Stock maximum atteint (${stock} disponibles)`, 'Fermer', {
-        duration: 3000,
-        panelClass: ['error-snackbar']
-      });
-    }
+      },
+      error: (error) => {
+        console.error('Error checking stock:', error);
+        this.snackBar.open('Erreur lors de la vérification du stock', 'Fermer', { duration: 3000 });
+      }
+    });
   }
 
   decreaseQuantity(item: CartItem): void {
