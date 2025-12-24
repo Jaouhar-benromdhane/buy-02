@@ -11,8 +11,9 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { CartService } from '../../core/services/cart-backend.service';
-import { ProductService } from '../../core/services/product.service';
+import { Product as ProductService } from '../../core/services/product';
 import { CartItem } from '../../core/models/cart.model';
+import { Product } from '../../core/models/product.model';
 
 @Component({
   selector: 'app-cart',
@@ -70,7 +71,7 @@ export class CartPage implements OnInit {
     
     // Vérifier le stock actuel en temps réel depuis l'API
     this.productService.getProductById(item.productId).subscribe({
-      next: (product) => {
+      next: (product: Product) => {
         const currentStock = product.stock;
         
         if (item.quantity < currentStock) {
@@ -79,7 +80,7 @@ export class CartPage implements OnInit {
             next: () => {
               this.snackBar.open('Quantité mise à jour', 'Fermer', { duration: 2000 });
             },
-            error: (error) => {
+            error: (error: any) => {
               console.error('Error updating quantity:', error);
               this.snackBar.open('Erreur lors de la mise à jour', 'Fermer', { duration: 3000 });
             }
@@ -92,7 +93,7 @@ export class CartPage implements OnInit {
           });
         }
       },
-      error: (error) => {
+      error: (error: any) => {
         console.error('Error checking stock:', error);
         this.snackBar.open('Erreur lors de la vérification du stock', 'Fermer', { duration: 3000 });
       }
