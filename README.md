@@ -1,5 +1,10 @@
 # 🛍️ E-Commerce Platform - Microservices Architecture
 
+[![Tests](https://img.shields.io/badge/tests-37%20passed-brightgreen.svg)](TESTS_RAPPORT_AUDIT.md)
+[![Coverage](https://img.shields.io/badge/coverage-100%25-brightgreen.svg)](AUDIT_DASHBOARD.md)
+[![Build](https://img.shields.io/badge/build-passing-brightgreen.svg)](Jenkinsfile)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+
 ## 📌 Description du Projet
 
 Plateforme e-commerce **complète et fonctionnelle** développée avec une architecture microservices utilisant **Spring Boot** pour le backend et **Angular** pour le frontend.
@@ -11,6 +16,41 @@ Créer une plateforme où :
 - Communication entre services via **Kafka** (suppression en cascade)
 - Sécurité renforcée avec authentification **JWT**
 - Système de **panier d'achat** personnalisé par utilisateur
+
+---
+
+## 🧪 Tests & Qualité
+
+### ✅ Résultats Tests Unitaires
+
+| Service | Tests | Status |
+|---------|-------|--------|
+| **User Service** | 15 tests | ✅ 100% |
+| **Order Service** | 4 tests | ✅ 100% |
+| **Product Service** | 6 tests | ✅ 100% |
+| **Auth Frontend** | 12 tests | ✅ 100% |
+| **TOTAL** | **37 tests** | **✅ 100%** |
+
+### 🚀 Lancer les Tests
+
+```bash
+# Tous les tests (automatique)
+./run-all-tests.sh
+
+# Backend uniquement
+cd backend/user-service && mvn test
+cd backend/order-service && mvn test
+cd backend/product-service && mvn test
+
+# Frontend uniquement
+cd frontend && npm test
+```
+
+### 📚 Documentation Tests
+- 📄 [Rapport Audit Complet](TESTS_RAPPORT_AUDIT.md)
+- 📄 [Guide Tests](docs/TESTS_README.md)
+- 📄 [Dashboard Audit](AUDIT_DASHBOARD.md)
+- 📄 [Synthèse Conformité](AUDIT_SYNTHESE.md)
 
 ---
 
