@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { Auth } from './auth';
 import { CartService } from './cart-backend.service';
-import { AuthResponse, LoginRequest, RegisterRequest } from '../models/user.model';
+import { AuthResponse, LoginRequest, RegisterRequest, User } from '../models/user.model';
 
 /**
  * TESTS UNITAIRES - AUTH SERVICE (Frontend)
@@ -95,11 +95,12 @@ describe('Auth Service', () => {
 
     const mockResponse: AuthResponse = {
       token: 'jwt-token-456',
+      type: 'Bearer',
       userId: 'user123',
       email: 'test@example.com',
       name: 'Test User',
       role: 'CLIENT',
-      avatar: null
+      avatar: undefined
     };
 
     service.login(loginData).subscribe(response => {
@@ -199,11 +200,11 @@ describe('Auth Service', () => {
    * TEST 11 : GET CURRENT USER - User exists
    */
   it('should return current user when logged in', () => {
-    const mockUser = {
+    const mockUser: User = {
       id: 'user123',
       email: 'test@example.com',
       name: 'Test User',
-      role: 'CLIENT'
+      role: 'CLIENT' as 'CLIENT'
     };
     localStorage.setItem('current_user', JSON.stringify(mockUser));
 

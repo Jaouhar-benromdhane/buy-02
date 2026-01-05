@@ -292,44 +292,41 @@ cd frontend && npm test
 
 ## 🚀 Installation et Démarrage
 
+> 📖 **Guide détaillé** : Voir [GUIDE_DEMARRAGE.md](GUIDE_DEMARRAGE.md) pour instructions complètes Windows/Linux
+
 ### Prérequis
 - **Java 17** ou supérieur
 - **Node.js 18+** et npm
 - **Docker** et **Docker Compose**
-- **Maven 3.8+**
+- **Maven 3.9+** (Windows) ou inclus (Linux)
 - **Git**
 
 ### 🎯 Démarrage Rapide (Automatique)
 
 #### Windows (PowerShell)
 ```powershell
+# Démarrer tout
 .\start-all.ps1
+
+# Arrêter tout
+.\stop-all.ps1
 ```
 
 #### Linux / Mac
 ```bash
+# Démarrer tout
 chmod +x start-all.sh
 ./start-all.sh
+
+# Arrêter tout
+chmod +x stop-all.sh
+./stop-all.sh
 ```
 
 Ces scripts démarrent automatiquement :
 - ✅ Docker Compose (MongoDB + Kafka + Zookeeper)
-- ✅ User Service (port 8081)
-- ✅ Product Service (port 8082)
-- ✅ Media Service (port 8083)
+- ✅ 4 Services Backend (ports 8081-8084)
 - ✅ Frontend Angular (port 4200)
-
-#### Arrêter tous les services
-
-**Windows:**
-```powershell
-.\stop-all.ps1
-```
-
-**Linux / Mac:**
-```bash
-./stop-all.sh
-```
 
 ---
 
@@ -337,8 +334,8 @@ Ces scripts démarrent automatiquement :
 
 #### 1️⃣ **Cloner le projet**
 ```bash
-git clone https://zone01normandie.org/git/jbenromd/buy-01.git
-cd buy-01
+git clone https://zone01normandie.org/git/jbenromd/buy-02.git
+cd buy-02
 ```
 
 #### 2️⃣ **Démarrer l'infrastructure (MongoDB + Kafka)**
@@ -358,25 +355,64 @@ Vous devriez voir :
 
 #### 3️⃣ **Backend - Compiler et lancer les microservices**
 
+##### **Windows (CMD/PowerShell)**
+
+**User Service** (Port 8081)
+```cmd
+cd backend\user-service
+build.bat    # Compiler
+run.bat      # Démarrer
+```
+
+**Product Service** (Port 8082)
+```cmd
+cd backend\product-service
+build.bat
+run.bat
+```
+
+**Media Service** (Port 8083)
+```cmd
+cd backend\media-service
+build.bat
+run.bat
+```
+
+**Order Service** (Port 8084)
+```cmd
+cd backend\order-service
+build.bat
+run.bat
+```
+
+##### **Linux / Mac (Bash)**
+
 **User Service** (Port 8081)
 ```bash
 cd backend/user-service
-mvn clean install
-mvn spring-boot:run
+chmod +x build.sh && ./build.sh   # Compiler
+chmod +x run.sh && ./run.sh       # Démarrer
 ```
 
 **Product Service** (Port 8082)
 ```bash
 cd backend/product-service
-mvn clean install
-mvn spring-boot:run
+chmod +x build.sh && ./build.sh
+chmod +x run.sh && ./run.sh
 ```
 
 **Media Service** (Port 8083)
 ```bash
 cd backend/media-service
-mvn clean install
-mvn spring-boot:run
+chmod +x build.sh && ./build.sh
+chmod +x run.sh && ./run.sh
+```
+
+**Order Service** (Port 8084)
+```bash
+cd backend/order-service
+chmod +x build.sh && ./build.sh
+chmod +x run.sh && ./run.sh
 ```
 
 #### 4️⃣ **Frontend - Angular**
@@ -390,30 +426,57 @@ Le serveur de développement démarre sur **http://localhost:4200**
 
 ---
 
+## 🧪 Exécuter les Tests
+
+### Tests Backend (Windows)
+```cmd
+cd backend\user-service
+test.bat     # 15 tests
+
+cd ..\product-service
+test.bat     # 6 tests
+
+cd ..\order-service
+test.bat     # 5 tests
+```
+
+### Tests Backend (Linux)
+```bash
+cd backend/user-service
+chmod +x test.sh && ./test.sh    # 15 tests
+
+cd ../product-service
+chmod +x test.sh && ./test.sh    # 6 tests
+
+cd ../order-service
+chmod +x test.sh && ./test.sh    # 5 tests
+```
+
+### Tests Frontend (Windows & Linux)
+```bash
+cd frontend
+npm test -- --watch=false --browsers=ChromeHeadless    # 19 tests
+```
+
+### Résultats attendus
+- ✅ **Backend** : 26 tests (0 échec)
+- ✅ **Frontend** : 19 tests (0 échec)
+- 🎯 **TOTAL** : 45 tests - 100% réussite
+
+---
+
 ## 🌐 Accès à l'Application
 
 | Service | URL | Description |
 |---------|-----|-------------|
-| **Frontend** | https://localhost:4200 | Application Angular |
-| **User Service** | https://localhost:8081 | API Utilisateurs |
-| **Product Service** | https://localhost:8082 | API Produits |
-| **Media Service** | https://localhost:8083 | API Images |
+| **Frontend** | http://localhost:4200 | Application Angular |
+| **User Service** | http://localhost:8081 | API Utilisateurs + Panier |
+| **Product Service** | http://localhost:8082 | API Produits |
+| **Media Service** | http://localhost:8083 | API Images |
+| **Order Service** | http://localhost:8084 | API Commandes |
 | **MongoDB** | localhost:27017 | Base de données |
 | **Kafka** | localhost:9092 | Message broker |
-
-### ⚠️ Note importante sur HTTPS
-
-Les services utilisent des **certificats SSL auto-signés** pour le développement. Lors du premier accès, votre navigateur affichera un avertissement de sécurité.
-
-**Pour accepter les certificats :**
-1. Ouvrez chaque URL backend dans votre navigateur :
-   - https://localhost:8081/api/auth/health
-   - https://localhost:8082/api/products
-   - https://localhost:8083/api/media/health
-2. Cliquez sur **"Avancé"** puis **"Continuer vers localhost"**
-3. Rechargez le frontend : https://localhost:4200
-
-**Alternative (pour développement seulement) :** Pour désactiver HTTPS, commentez les sections `ssl:` dans les fichiers `application.yml` des 3 services backend et changez les URLs de `https://` vers `http://` dans les services Angular.
+| **Jenkins** | http://localhost:8080 | CI/CD (optionnel) |
 
 ---
 

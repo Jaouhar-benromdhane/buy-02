@@ -14,13 +14,62 @@ Microservice de gestion des commandes pour la plateforme e-commerce.
 - ✅ Annulation de commandes
 - ✅ Historique complet
 
+## 🚀 Démarrage Rapide
+
+### Windows
+
+```cmd
+# Compiler
+build.bat
+
+# Tester
+test.bat
+
+# Démarrer
+run.bat
+```
+
+### Linux
+
+```bash
+# Compiler
+chmod +x build.sh && ./build.sh
+
+# Tester
+chmod +x test.sh && ./test.sh
+
+# Démarrer
+chmod +x run.sh && ./run.sh
+```
+
 ## 🏗️ Architecture
 
-- **Port**: 8084 (HTTPS)
-- **Base de données**: MongoDB (`ecommerce_orders`)
+- **Port**: 8084
+- **Base de données**: MongoDB (`ecommerce`)
+- **Collection**: `orders`
 - **Communication**: Kafka (événements inter-services)
 - **Framework**: Spring Boot 3.2.0
 - **Java**: 17
+
+## 🧪 Tests
+
+**Tests unitaires :** 5 tests
+
+```bash
+# Windows
+test.bat
+
+# Linux
+./test.sh
+```
+
+### Tests implémentés
+
+- ✅ `testCreateOrder_Success()` - Création commande réussie
+- ✅ `testCreateOrder_WithItems()` - Commande avec articles
+- ✅ `testCalculateTotalAmount()` - Calcul montant total
+- ✅ `testGetOrderById()` - Récupération par ID
+- ✅ `testOrderItem_CalculateSubtotal()` - Calcul sous-total item
 
 ## 📊 Modèle de données
 

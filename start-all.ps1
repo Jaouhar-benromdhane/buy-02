@@ -61,6 +61,12 @@ Write-Host "  - Media Service (port 8083)..." -ForegroundColor Cyan
 cd backend\media-service
 Start-Process -NoNewWindow -FilePath "java" -ArgumentList "-jar","target\media-service-1.0.0.jar"
 cd ..\..
+Start-Sleep -Seconds 3
+
+Write-Host "  - Order Service (port 8084)..." -ForegroundColor Cyan
+cd backend\order-service
+Start-Process -NoNewWindow -FilePath "java" -ArgumentList "-jar","target\order-service-1.0.0.jar"
+cd ..\..
 Start-Sleep -Seconds 5
 
 Write-Host "  OK Services backend demarres" -ForegroundColor Green
@@ -77,10 +83,11 @@ Write-Host "     TOUS LES SERVICES SONT DEMARRES    " -ForegroundColor Green
 Write-Host "========================================" -ForegroundColor Green
 Write-Host ""
 Write-Host "Services disponibles :" -ForegroundColor Cyan
-Write-Host "  - Frontend:        https://localhost:4200" -ForegroundColor White
+Write-Host "  - Frontend:        http://localhost:4200" -ForegroundColor White
 Write-Host "  - User Service:    https://localhost:8081" -ForegroundColor White
 Write-Host "  - Product Service: https://localhost:8082" -ForegroundColor White
 Write-Host "  - Media Service:   https://localhost:8083" -ForegroundColor White
+Write-Host "  - Order Service:   https://localhost:8084" -ForegroundColor White
 Write-Host "  - MongoDB:         localhost:27017" -ForegroundColor White
 Write-Host "  - Kafka:           localhost:9092" -ForegroundColor White
 Write-Host ""

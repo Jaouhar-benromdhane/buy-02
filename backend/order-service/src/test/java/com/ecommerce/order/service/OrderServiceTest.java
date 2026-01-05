@@ -176,11 +176,11 @@ class OrderServiceTest {
     /**
      * TEST 5 : ORDER ITEM - Calculate Subtotal
      */
-    @TestUni
+    @Test
     void testOrderItem_CalculateSubtotal() {
         // Arrange
         OrderItem item = new OrderItem();
-        item.setProductPrice(50.0);
+        item.setUnitPrice(50.0);
         item.setQuantity(3);
 
         // Act

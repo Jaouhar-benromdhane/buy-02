@@ -9,7 +9,7 @@ echo ============================================
 echo.
 
 REM Aller dans le répertoire du projet
-cd /d E:\pZone01\Pjava\buy-01\backend\media-service
+cd /d E:\pZone01\Pjava\buy-02\backend\media-service
 
 REM Définir JAVA_HOME
 set JAVA_HOME=E:\Java
