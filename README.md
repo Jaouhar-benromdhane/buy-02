@@ -1,8 +1,9 @@
 # 🛍️ E-Commerce Platform - Microservices Architecture
 
-[![Tests](https://img.shields.io/badge/tests-37%20passed-brightgreen.svg)](TESTS_RAPPORT_AUDIT.md)
+[![Tests](https://img.shields.io/badge/tests-45%20passed-brightgreen.svg)](TESTS_RAPPORT_AUDIT.md)
 [![Coverage](https://img.shields.io/badge/coverage-100%25-brightgreen.svg)](AUDIT_DASHBOARD.md)
 [![Build](https://img.shields.io/badge/build-passing-brightgreen.svg)](Jenkinsfile)
+[![SSL](https://img.shields.io/badge/SSL-HTTPS%20enabled-green.svg)](#)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 ## 📌 Description du Projet
@@ -14,8 +15,32 @@ Créer une plateforme où :
 - Les **clients** peuvent consulter, rechercher et acheter des produits
 - Les **vendeurs** peuvent gérer leurs produits avec images multiples
 - Communication entre services via **Kafka** (suppression en cascade)
-- Sécurité renforcée avec authentification **JWT**
+- Sécurité renforcée avec authentification **JWT** et **HTTPS/SSL**
 - Système de **panier d'achat** personnalisé par utilisateur
+
+### ⚡ Démarrage Rapide
+
+**Windows:**
+```powershell
+.\start-all.ps1
+```
+
+**Linux/Mac:**
+```bash
+chmod +x start-all.sh
+./start-all.sh
+```
+
+**Accès:**
+- 🌐 Frontend: http://localhost:4200
+- 🔐 User Service: https://localhost:8081
+- 📦 Product Service: https://localhost:8082
+- 🖼️ Media Service: https://localhost:8083
+- 📋 Order Service: https://localhost:8084
+
+> 💡 **Note:** Acceptez les certificats SSL auto-signés dans votre navigateur
+
+📖 **Documentation complète:** [GUIDE_DEMARRAGE.md](GUIDE_DEMARRAGE.md)
 
 ---
 
@@ -26,10 +51,11 @@ Créer une plateforme où :
 | Service | Tests | Status |
 |---------|-------|--------|
 | **User Service** | 15 tests | ✅ 100% |
-| **Order Service** | 4 tests | ✅ 100% |
 | **Product Service** | 6 tests | ✅ 100% |
-| **Auth Frontend** | 12 tests | ✅ 100% |
-| **TOTAL** | **37 tests** | **✅ 100%** |
+| **Order Service** | 5 tests | ✅ 100% |
+| **Frontend (Auth)** | 12 tests | ✅ 100% |
+| **Frontend (Components)** | 7 tests | ✅ 100% |
+| **TOTAL** | **45 tests** | **✅ 100%** |
 
 ### 🚀 Lancer les Tests
 
@@ -83,10 +109,10 @@ cd frontend && npm test
   - Panier persistant par utilisateur en base de données
 - ✅ Navigation fluide entre les pages
 - 🚧 **Système de commandes** (en cours) :
-  - Checkout avec formulaire d'adresse
-  - Paiement à la livraison (Pay on Delivery)
-  - Historique des commandes
-  - Suivi du statut des commandes
+  - ✅ Checkout avec formulaire d'adresse
+  - ✅ Paiement à la livraison (Pay on Delivery)
+  - ✅ Historique des commandes
+  - ✅ Suivi du statut des commandes (PENDING → CONFIRMED → SHIPPED → DELIVERED)
 
 ### 🏪 **Pour les Vendeurs (SELLER)**
 - ✅ Dashboard de gestion des produits
@@ -98,6 +124,9 @@ cd frontend && npm test
   - Suppression d'images
   - Ajout de nouvelles images
 - ✅ Suppression de produits (cascade avec Kafka)
+- ✅ **Gestion des commandes** :
+  - Consultation des commandes clients
+  - Mise à jour du statut (PENDING → CONFIRMED → SHIPPED → DELIVERED)
 - ✅ Tableau de bord avec :
   - Liste des produits en tableau
   - **Avatar du vendeur** dans la toolbar
