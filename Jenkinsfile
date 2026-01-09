@@ -126,16 +126,15 @@ pipeline {
             steps {
                 echo '📊 Analyse qualité du code avec SonarQube...'
                 script {
-                    // SonarQube optionnel - à configurer si disponible
-                    try {
-                        withSonarQubeEnv('SonarQube') {
-                            sh '''
-                                cd backend/user-service
-                                mvn sonar:sonar
-                            '''
-                        }
-                    } catch (Exception e) {
-                        echo "⚠️ SonarQube non configuré, étape ignorée"
+                    withSonarQubeEnv('SonarQube') {
+                        sh '''
+                            cd backend/user-service
+                            mvn org.sonarsource.scanner.maven:sonar-maven-plugin:3.10.0.2594:sonar \
+                                -Dsonar.projectKey=buy-02 \
+                                -Dsonar.projectName=buy-02-ecommerce \
+                                -Dsonar.sources=src/main/java \
+                                -Dsonar.java.binaries=target/classes
+                        '''
                     }
                 }
             }
