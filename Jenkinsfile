@@ -123,9 +123,6 @@ pipeline {
         
         // =========== ÉTAPE 6 : CODE QUALITY (SonarQube) ===========
         stage('Code Quality Analysis') {
-            when {
-                expression { return env.BRANCH_NAME == 'main' || env.BRANCH_NAME == 'master' }
-            }
             steps {
                 echo '📊 Analyse qualité du code avec SonarQube...'
                 script {
@@ -156,7 +153,7 @@ pipeline {
         // =========== ÉTAPE 8 : DOCKER BUILD (optionnel) ===========
         stage('Docker Build') {
             when {
-                expression { return env.BRANCH_NAME == 'main' || env.BRANCH_NAME == 'master' }
+                expression { return false } // Désactivé pour l'audit
             }
             steps {
                 echo '🐳 Build des images Docker...'
@@ -173,7 +170,7 @@ pipeline {
         // =========== ÉTAPE 9 : DEPLOY (optionnel) ===========
         stage('Deploy') {
             when {
-                expression { return env.BRANCH_NAME == 'main' || env.BRANCH_NAME == 'master' }
+                expression { return false } // Désactivé pour l'audit
             }
             steps {
                 echo '🚀 Déploiement de l\'application...'
