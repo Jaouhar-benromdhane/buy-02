@@ -80,11 +80,6 @@ pipeline {
                             sh 'mvn test -Dtest=UserServiceTest,CartServiceTest'
                         }
                     }
-                    post {
-                        always {
-                            junit 'backend/user-service/target/surefire-reports/*.xml'
-                        }
-                    }
                 }
                 stage('Test Product Service') {
                     steps {
@@ -207,7 +202,7 @@ pipeline {
         always {
             echo '🧹 Nettoyage...'
             // Nettoyage des ressources temporaires
-            cleanWs()
+            deleteDir()
         }
     }
 }
